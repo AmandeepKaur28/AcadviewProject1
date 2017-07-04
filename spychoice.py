@@ -1,7 +1,9 @@
 # importing classes Spy,ChatMsg and list (friends) and object named spy of class Spy
 from spy_detail import spy,Spy,friends,ChatMsg
 from steganography.steganography import Steganography  # importing Steganography library for message encoding
-from collections import Counter # to count the no of words in the text
+from termcolor import *  #import all the files from termcolor module to print colored text on terminal
+import colorama #import colorama file to print the colored text on terminal
+colorama.init()
 
 STATUS_MESSAGE = ["hey!their i am using whatsapp", "Sleeping", "At gym"]  # for default status
 print "Hello! Let\'s get started"
@@ -101,11 +103,11 @@ def send_message():
   friend_choice = select_friend()
 
 # ask to give input to which user want to encode
-  original_image = "G:\Abc\kitty.jpg"
-  output_path = "G:\Screenshots\kittyO.jpg"
+  original_image = raw_input("what is the name of your image??")
+  output_path = "output.jpg"
   text = str(raw_input("What do you want to say?"))  # ask to enter message which you want to hide
   list_of=text.split(" ")
-  if len(list_of)>=50:
+  if len(list_of)>=100:
       print "you cross your limit"
 
   else:
@@ -113,9 +115,6 @@ def send_message():
 
       #Using the Steganography library hide the message inside the image
       Steganography.encode(original_image, output_path, text)
-
-
-
       new_chat =ChatMsg(text,True)
 
      #Append the chat message to 'chats' key for the friends list.
@@ -137,19 +136,27 @@ def read_message():
       friends[sender].chats.append(new_chat)
 
       print "Your secret message has been saved!" +secret_text
+      list_of = secret_text.split(" ")
+      for ele in list_of:
+          if ele == "SOS" or ele == "sos" or ele == "SAVE" or ele == "save" or ele == "help" or ele == "HELP":  # If a spy sends a message with special words such as SOS or SAVE ME or HELP ,then display a message and exit the application.
+              print "Spy is in danger!"
+              exit()
 
 
 #It used to print the chat history for that particular friend
 def read_chat_history():
-
     read_for=select_friend()
-
     for chat in friends[read_for].chats:
 
         if chat.sent_by_me:
-            print "[%s] %s: %s" % (chat.time.strftime("%d %B %Y"), "You said:", chat.message)
+            cprint("[%s]" % chat.time.strftime("%d %B %Y"), "blue")  # print chat history using different colors
+            cprint("%s" % "you said:", "red")
+            print "%s" % chat.message
         else:
-            print "[%s] %s said: %s" % (chat.time.strftime("%d %B %Y"), friends[read_for].name, chat.message)
+            cprint("[%s]" % chat.time.strftime("%d %B %Y"), "blue")
+            cprint("%s said:" % friends[read_for].name, "red")
+            print "%s" % chat.message
+
 
 # spy_chat() function has multiple choices to do
 def spy_chat(spy):
@@ -160,29 +167,28 @@ def spy_chat(spy):
 
         print "Authentication complete. Welcome " + spy.name + " age: " + str(spy.age) + " and rating of: " + str(spy.rating) + " Proud to have you onboard"
 
-    show_menu = True
+        show_menu = True
 
-    while show_menu:
-        menu_choices = "what you want to do? 1.add a status \n 2.add a friend \n 3.Send a scret message\n 4.Read a secret message\n 5.Read chat history\n 6.Close Application"
-        menu_choice =raw_input(menu_choices)
+        while show_menu:
+            menu_choices = "what you want to do? 1.add a status \n 2.add a friend \n 3.Send a scret message\n 4.Read a secret message\n 5.Read chat history\n 6.Close Application"
+            menu_choice =raw_input(menu_choices)
 
-        if len(menu_choice) > 0:
-            menu_choice = int(menu_choice)
+            if len(menu_choice) > 0:
+               menu_choice = int(menu_choice)
+               if menu_choice == 1:
+                   spy.current_status_message = add_status()
+               elif menu_choice == 2:
+                  number_of_friends = add_friend()
+                  print "you have %d friends" % (number_of_friends)
+               elif menu_choice == 3:
+                   send_message()
+               elif menu_choice == 4:
+                   read_message()
+               elif menu_choice == 5:
+                  read_chat_history()
 
-        if menu_choice == 1:
-            spy.current_status_message = add_status()
-        elif menu_choice == 2:
-            number_of_friends = add_friend()
-            print "you have %d friends" % (number_of_friends)
-        elif menu_choice == 3:
-            send_message()
-        elif menu_choice == 4:
-            read_message()
-        elif menu_choice == 5:
-            read_chat_history()
-
-        else:
-            show_menu = False
+               elif menu_choice==6:
+                   show_menu = False
 
 
     else:
